@@ -31,10 +31,10 @@ def romberg(f, a, b, m):
 
 
 if __name__ == "__main__":
-    f = lambda x: np.cos(x ** 2)
-    b = np.pi
-    a = 0
-    m = 6 #anzahl spalten
+    f = lambda x: np.cos(x ** 2) # Funktion
+    b = np.pi   # Endwert
+    a = 0       # Startwert
+    m = 6       # Anzahl Schritte
 
     res = romberg(f, a, b, m)
     print(res)
