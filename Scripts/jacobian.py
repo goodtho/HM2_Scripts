@@ -36,7 +36,9 @@ result = f + df @ x0
 sy.pretty_print(result)
 
 #Beispiel 2d
+'''
 f1 = 5*x*y
 f2 = x**2*y**2 + x + 2*y
 x0 = [1,2]
 jacobian_2d(f1,f2,x0)
+'''
