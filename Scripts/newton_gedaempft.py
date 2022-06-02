@@ -64,7 +64,7 @@ f2 = sp.ln(y / 4) + sp.exp(0.5 * z - 1) - 1
 f3 = (y - 3) ** 2 - z ** 3 + 7
 x0 = np.array([[1.5], [3], [2.5]])
 
-tol = 10 ** -5
+tol = 10 ** -7
 
 # Jacobi Matrix vorbereiten
 f_matrix = sp.Matrix([f1, f2, f3])
