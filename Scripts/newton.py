@@ -1,44 +1,64 @@
 import numpy as np
-import sympy
 import sympy as sp
 
-def newton(f, Df, xn, tol):
-    i = 1
-    while np.linalg.norm(f(xn)) > tol:
-        sympy.pprint(f"Iteration: {i}")
-        sympy.pprint(f"Df: {Df(xn)}")  # Jacobi Matrix
-        sympy.pprint(f"f: {f(xn)}")  # f(x))
-        sympy.pprint(f"Norm f(x): {np.linalg.norm(f(xn), 2)}")
 
-        xn_1 = xn
-        delta = np.linalg.solve(Df(xn), -f(xn))
-        xn = xn + delta
+def newton(f: sp.Expr, x0: np.ndarray, tol: float, max_iter: int, pmax=10, damping=True, simplyfied=False):
+    """Newton Verfahren zur Nullstellenbestimmung für Systeme
 
-        sympy.pprint(f"Delta: {delta}")
-        sympy.pprint(f"xn: {xn}")
-        sympy.pprint(f"Norm xn - xn-1: {np.linalg.norm(xn - xn_1, 2)}")
-        sympy.pprint("\n\n")
+    Args:
+        f (Sympy Expr.): Sympy Expression (e.g Matrix)
+        x0 (ndarray): initial vector/guess
+        tol (float): error tolerance from root of f
+        max_iter (int): max number of iterations
+        pmax (int, optional): max damping value 2^pmax. Defaults to 10
+        damping (bool, optional): enable damping. Defaults to True
+        simplyfied (bool, optional): uses simplyfied newton procedure. Defaults to False
 
-        i += 1
+    Returns:
+        list: root of f containing names and values
+    """
+    # Sympy
+    x = list(f.free_symbols)
+    df = f.jacobian(sp.Matrix(x))
+    f = sp.lambdify([x], f, 'numpy')
+    df = sp.lambdify([x], df, 'numpy')
 
-    return xn
+    # Numpy
+    xn = np.copy(x0)
+    k = 0
+    while np.linalg.norm(f(xn), 2) > tol and k < max_iter:
+        d = np.linalg.solve(df(x0) if simplyfied else df(xn) , -1 * f(xn)).flatten()
+        # damping
+        if damping:
+            p = 0
+            for i in range(pmax):
+                if np.linalg.norm(xn + (d / (2 ** i)), 2) < np.linalg.norm(f(xn), 2):
+                    p = i
+                    break
+            if p == 0:
+                xn = xn + d
+            else:
+                print(f'damping with p={p}\n')
+                xn = xn + d / (2 ** p)
+        else:
+            xn = xn + d
+    return list(zip(x, xn))
 
 
-x, y = sp.symbols('x y')
 
-# Serie 3 Aufgabe 1
-f1 = 20 - 18 * x - 2 * y ** 2
-f2 = (-4) * y * (x - y ** 2)
-x0 = np.array([[1.1], [0.9]])
+####################################################################################################
+# EXAMPLE NEWTON
+####################################################################################################
+if __name__ == '__main__':
+    x1, x2, x3 = sp.symbols('x1, x2, x3')
 
-f_matrix = sp.Matrix([f1, f2])
-f = sp.lambdify([([x], [y])], f_matrix, 'numpy')
-Df = sp.lambdify([([x], [y])], f_matrix.jacobian([x, y]), 'numpy')
+    f1 = x1 + x2 ** 2 + x3 ** 2 - 13
+    f2 = sp.ln(x2 / 4) + sp.exp(0.5 * x3 - 1) - 1
+    f3 = (x2 - 3) ** 2 - x3 ** 3 + 7
+    f = sp.Matrix([f1, f2, f3])
 
-tol = 10 ** -5
+    x0 = np.array([1.5, 3, 2.5])
+    tol = 1e-5
+    max_iter = 10
 
-#wenn nach x Iterationen gefragt wird, while anpassen mit i < iteration anstatt tol
-#Newton mit Dämpfung? erweitern mit use_daming=False und optionalem setzen
-sol = newton(f, Df, x0, tol)
-print("Lösung: ")
-sympy.pretty_print(sol)
+    print(newton(f, x0, tol, max_iter, damping=False, simplyfied=True))

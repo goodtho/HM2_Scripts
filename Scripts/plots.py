@@ -1,18 +1,75 @@
+from typing import Callable
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-def wireframe(x, y, f, cstride=5, rstride=5):
-    """creates a 3d wireframe plot with basic axis names x,y,z.
-
-    Edit return with set_title, set_xlabel etc.
+def plot_vector_field(f: Callable[[float], float], xmin: float, xmax: float, ymin: float, ymax: float, hx: float, hy: float):
+    """plottet ein vektorfeld
 
     Args:
-        x (npArray): x values
-        y (npArray): y values
+        f (function): y' = f(x, y)
+        xmin (float): start x value
+        xmax (float): end x value
+        ymin (float): start y value
+        ymax (float): end y value
+        hx (float): x step width
+        hy (float): y step width
+
+    Returns:
+        plt: plt object. use plt.show() to show it.
+    """
+    x = np.arange(xmin, xmax + hx,hx)
+    y = np.arange(ymin, ymax+ hy,hy)
+    [x,y] = np.meshgrid(x,y)
+    dy = f(x,y)
+    dx = np.ones(np.shape(dy))
+    dz = np.sqrt(dx**2 + dy**2)
+    dx = dx/dz
+    dy = dy/dz
+    plt.quiver(x,y,dx,dy, angles='xy', width=0.003 )
+    plt.xlim(xmin - hx, xmax + hx)
+    plt.ylim(ymin - hy, ymax + hy)
+    return plt
+
+
+
+def ausgleich_plot(f: Callable[[float], float], x: np.ndarray, y: np.ndarray, lo=None, hi=None, n=1000):
+    """plottet x,y Werte sowie n datenpunkte der funktion f
+
+    Edit return with title(), xlabel() etc.
+
+    Args:
+        f (funktion): function(x) -> y
+        x (ndarray): x values
+        y (ndarray): y values
+        lo (int, optional): lower bound. Defaults to x.min
+        hi (int, optional): higher bound. Defaults to x.max
+        n (int, optional): datapoints between lo and hi. Defaults to 1000.
+
+    Returns:
+        plt: plt object. use plt.show() to show it.
+    """
+    lo = lo if lo != None else np.min(x)
+    hi = hi if hi != None else np.max(x)
+    plt.plot(x, y, 'o')
+    xx = np.linspace(lo, hi, n)
+    plt.plot(xx, f(xx))
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Ausgleichsrechnung')
+    return plt
+
+def wireframe(f: Callable[[float, float], float], x: np.ndarray, y: np.ndarray, cstride=5, rstride=5):
+    """creates a 3d wireframe plot with basic axis names x,y,z.
+
+    Edit return with title(), xlabel() etc.
+
+    Args:
         f (function): f(x, y) -> z
-        cstride (int): column stride (default = 5)
-        rstride (int): row stride (default = 5)
+        x (ndarray): x values
+        y (ndarray): y values
+        cstride (int, optional): column stride. Defaults to 5
+        rstride (int, optional): row stride. Defaults to 5
 
     Returns:
         plt: plt object. use plt.show() to show it.
@@ -27,15 +84,15 @@ def wireframe(x, y, f, cstride=5, rstride=5):
     return plt
 
 
-def surface(x, y, f):
+def surface(f: Callable[[float, float], float], x: np.ndarray, y: np.ndarray):
     """creates a 3d meshgrid plot with basic axis names x,y,z.
 
-    Edit return with set_title, set_xlabel etc.
+    Edit return with title(), xlabel() etc.
 
     Args:
-        x (npArray): x values
-        y (npArray): y values
         f (function): f(x, y) -> z
+        x (ndarray): x values
+        y (ndarray): y values
 
     Returns:
         plt: plt object. use plt.show() to show it.
@@ -50,15 +107,15 @@ def surface(x, y, f):
     return plt
 
 
-def contour(x, y, f):
+def contour(f: Callable[[float, float], float], x: np.ndarray, y: np.ndarray):
     """creates a 2d contour plot with basic axis names x,y.
 
-    Edit return with set_title, set_xlabel etc.
+    Edit return with title(), xlabel() etc.
 
     Args:
-        x (npArray): x values
-        y (npArray): y values
         f (function): f(x, y) -> z
+        x (ndarray): x values
+        y (ndarray): y values
 
     Returns:
         plt: plt object. use plt.show() to show it.
@@ -73,11 +130,13 @@ def contour(x, y, f):
     return plt
 
 
+####################################################################################################
 # EXAPLE
+####################################################################################################
 if __name__ == '__main__':
     x = np.linspace(0, 100, 100)
     y = np.linspace(0, np.pi/2, 100)
-    f = lambda x, y: (x ** 2) * np.sin(2 * y)/(9.81)
+    def f(x, y): return (x ** 2) * np.sin(2 * y)/(9.81)
     wireframe(x, y, f).show()
     surface(x, y, f).show()
     contour(x, y, f).show()
