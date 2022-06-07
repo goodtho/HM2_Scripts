@@ -1,5 +1,6 @@
 from typing import Callable
 import numpy as np
+import sympy as sp
 
 
 
@@ -82,7 +83,7 @@ def romb(f: Callable[[float], float], a: float, b: float, m: int, print_matrix=F
         f (function): function f(x) -> y
         a (float): integration start x-val
         b (float): integraton end x-val
-        n (int): number romberg matrix rows
+        m (int): number romberg matrix rows
         print_matrix (bool, optional): print romberg matrix. Defaults to False
 
     Returns:
@@ -112,6 +113,7 @@ def gauss(f: Callable[[float], float], a: float, b: float, n = 3):
     Returns:
         _type_: _description_
     """
+    assert n in [1, 2, 3], 'n needs to be 1, 2 or 3!'
     if n == 1:
         return (b-a) * f((b+a)/2)
     if n == 2:
@@ -120,15 +122,55 @@ def gauss(f: Callable[[float], float], a: float, b: float, n = 3):
     if n == 3:
         sqrt06 = np.sqrt(0.6)
         return (b-a)/2 * (5/9 * f(-sqrt06 * (b-a)/2 + (b+a)/2) + 8/9 * f((b+a)/2) + 5/9 * f(sqrt06 * (b-a)/2 + (b+a)/2))
-    raise 'n needs to be 1, 2 or 3!'
+
+
+
+def err_est(f: sp.Expr, a: float, b: float, tol: float, type: str) -> float:
+    """Fehlerabschätzung für summierte quadraturformeln
+
+    Args:
+        f (Sympy Expr.): Sympy function f(x)
+        a (float): lower bound
+        b (float): higher bound
+        tol (float): error tolerance
+        type (str): 'R': Rechteck, 'T': Trapez, 'S': Simpson
+
+    Returns:
+        float: Max Schrittbreite
+    """
+    assert type in ['R', 'T', 'S'], "Type needs to be 'R', 'T' or 'S'"
+    a, b = float(a), float(b)
+    x = list(f.free_symbols)[0]
+    fd = sp.diff(f, x, 4 if type == ('S' or 's') else 2)
+    print(f'fd: {fd}')
+    fdpos = float(sp.Float(sp.maximum(fd, x, sp.Interval(a, b))))
+    fdneg = float(sp.Float(sp.maximum(-fd, x, sp.Interval(a, b))))
+    fdmax = np.max([fdpos, fdneg])
+    print(f'fd_max: {fdmax}')
+    if type == 'R':
+        return np.sqrt((tol * 24) / (fdmax * (b-a)))
+    if type == 'T':
+        return np.sqrt((tol * 12) / (fdmax * (b-a)))
+    if type == 'S':
+        return np.sqrt(np.sqrt((tol * 2880) / (fdmax * (b-a))))
+
 
 
 ####################################################################################################
 # EXAMPLE INTEGRATION
 ####################################################################################################
 if __name__ == '__main__':
+    print('example integration')
     f = lambda x: 1/x
     a = 4
     b = 2
     n = 4
     print(romb(f, a, b, n))
+
+    print('example err_est')
+    x = sp.symbols('x')
+    f = sp.ln(x ** 2)
+    a = 1
+    b = 2
+    tol = 10 ** -5
+    print(err_est(f, a, b, tol, 'T'))
