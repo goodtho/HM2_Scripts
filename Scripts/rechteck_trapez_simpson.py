@@ -45,6 +45,13 @@ def rechteck_fehler(f, a, b, h, res):
     print(f"Absoluter Fehler: {abs_error}\n")
 
 
+'''
+Berechnet trapez
+f = Funktion
+a = Startwert
+b = Endwert
+n = Anzahl Schritte
+'''
 def trapez(f, a, b, n):
     h = (b - a) / n
     base = (f(a) + f(b)) / 2
