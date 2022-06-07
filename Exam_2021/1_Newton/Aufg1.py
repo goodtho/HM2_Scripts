@@ -1,4 +1,4 @@
-from hmlib import newton
+from Scripts import newton
 import sympy as sp
 import numpy as np
 

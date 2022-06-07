@@ -1,5 +1,5 @@
 import numpy as np
-from hmlib import ausgleichsrechnung, plots, misc
+from Scripts import ausgleichsrechnung, plots, misc
 import matplotlib.pyplot as plt
 
 # A

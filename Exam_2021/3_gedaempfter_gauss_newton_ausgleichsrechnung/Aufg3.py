@@ -1,4 +1,4 @@
-from hmlib import ausgleichsrechnung, misc, plots
+from Scripts import ausgleichsrechnung, misc, plots
 import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt

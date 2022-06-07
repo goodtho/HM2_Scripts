@@ -1,4 +1,4 @@
-from hmlib import integration
+from Scripts import integration
 import numpy as np
 import sympy as sp
 
