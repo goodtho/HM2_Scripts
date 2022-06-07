@@ -33,7 +33,7 @@ def plot_vector_field(f: Callable[[float], float], xmin: float, xmax: float, ymi
 
 
 
-def ausgleich_plot(f: Callable[[float], float], x: np.ndarray, y: np.ndarray, lo=None, hi=None, n=1000):
+def ausgleich_plot(f: Callable[[float], float], x: np.ndarray, y: np.ndarray, lo=None, hi=None, n=1000, label=None):
     """plottet x,y Werte sowie n datenpunkte der funktion f
 
     Edit return with title(), xlabel() etc.
@@ -45,6 +45,7 @@ def ausgleich_plot(f: Callable[[float], float], x: np.ndarray, y: np.ndarray, lo
         lo (int, optional): lower bound. Defaults to x.min
         hi (int, optional): higher bound. Defaults to x.max
         n (int, optional): datapoints between lo and hi. Defaults to 1000.
+        label (str, optional): legend name of function f
 
     Returns:
         plt: plt object. use plt.show() to show it.
@@ -53,7 +54,11 @@ def ausgleich_plot(f: Callable[[float], float], x: np.ndarray, y: np.ndarray, lo
     hi = hi if hi != None else np.max(x)
     plt.plot(x, y, 'o')
     xx = np.linspace(lo, hi, n)
-    plt.plot(xx, f(xx))
+    if label != None:
+        plt.plot(xx, f(xx), label=label)
+        plt.legend()
+    else:
+        plt.plot(xx, f(xx))
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title('Ausgleichsrechnung')
@@ -137,6 +142,6 @@ if __name__ == '__main__':
     x = np.linspace(0, 100, 100)
     y = np.linspace(0, np.pi/2, 100)
     def f(x, y): return (x ** 2) * np.sin(2 * y)/(9.81)
-    wireframe(x, y, f).show()
-    surface(x, y, f).show()
-    contour(x, y, f).show()
+    wireframe(f, x, y).show()
+    surface(f, x, y).show()
+    contour(f, x, y).show()

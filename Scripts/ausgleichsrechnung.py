@@ -1,12 +1,14 @@
 from typing import Callable, overload
 import sympy as sp
 import numpy as np
-from plots import ausgleich_plot
 
 
 
-def gauss_newton_ausg(f: Callable[[float, np.ndarray], float], x: np.ndarray, y: np.ndarray, lam0: np.ndarray, tol: float, max_iter: int, pmax=5, damping=True):
+def gauss_newton_ausg(f: Callable[[float, np.ndarray], float], x: np.ndarray, y: np.ndarray, lam0: np.ndarray, tol: float, max_iter: int, pmax=5, damping=True) -> Callable[[float], float]:
     """Gedämpftes Gauss-Newton verfahren Ausgleichsrechnung.
+
+
+        Use Sympy expressions in function f (e.g sp.exp(), sp.sin())
 
     Args:
         f (function): function(x, p) where p is lambda ndarray
@@ -74,7 +76,7 @@ def linear_ausg(f: Callable[[np.ndarray, np.ndarray], float], x: np.ndarray, y: 
     ...
 @overload
 def linear_ausg(f: Callable[[float, np.ndarray], float], x: np.ndarray, y: np.ndarray, lam_nr: int):
-    """Lineare Ausgleichsrechnung
+    """Lineare Ausgleichsrechnung. Methode der kleinsten Quadrate.
 
     Args:
         f (function): function(x, p) where p is lambda ndarray
@@ -95,11 +97,27 @@ def linear_ausg(f, x, y, lam_nr):
 
 
 
+def fehlerfunktional(f: Callable[[float], float], x: np.ndarray, y: np.ndarray):
+    """Rechnet das Fehlerfunktional E einer gefitteten Ausgleichsfunktion
+
+    Args:
+        f (function): Ausgleichsfunktion f(x) -> y
+        x (ndarray): x values
+        y (ndarray): y values
+
+    Returns:
+        float: sum of squares
+    """
+    return np.power(np.linalg.norm(y - f(x), 2), 2)
+
+
+
 ####################################################################################################
 # EXAMPLE AUSGLEICHSRECHNUNG
 ####################################################################################################
 if __name__ == '__main__':
-    f = lambda x, p: p[0] * np.e ** (p[1] * x)
+    from plots import ausgleich_plot
+    f = lambda x, p: p[0] * sp.exp(p[1] * x)
     x = np.array([0, 1, 2, 3, 4])
     y = np.array([3, 1, 0.5, 0.2, 0.05])
     lam0 = np.array([2, 2])
