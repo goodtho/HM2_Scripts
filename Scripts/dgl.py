@@ -1,3 +1,16 @@
+"""Differenzialgleichung Modul.
+
+Funcs:
+    - butcher
+    - euler
+    - mittelpunkt
+    - heun (modEuler)
+    - rk4 (Runge-Kutta4)
+
+@author: Martin Oswald
+@license: MIT
+@version: 1.0
+"""
 from typing import Callable, Tuple, overload
 import numpy as np
 import functools
@@ -68,7 +81,9 @@ def butcher(f, lo, hi, n, y0, a, b, c):
         k = __get_k__(a, c, h, f, x, y[-1])
         return np.append(y, [__rk_step__(y[-1], h, b, k)], axis=0)
     y = functools.reduce(rk_reducer, x[:-1], [y0])
-    return(x, y if isinstance(y[0], float) else y[:,0])
+    z = np.vectorize(lambda x, z: np.array(f(x, z)), signature='(),(y) -> (z)')(x, y)[:, -1]
+    y = np.c_[y, z]
+    return(x, y)
 
 
 @overload

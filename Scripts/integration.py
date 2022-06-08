@@ -1,3 +1,17 @@
+"""Integrazion Modul.
+
+Funcs:
+    - trap_tab (trapez mit tabelarischen Werten)
+    - recht (rechteck)
+    - simp (Simpson)
+    - romb (Romberg Extrapolazion)
+    - gauss (Gaussformeln für n = 1, 2, 3)
+    - err_est (Fehlerabschätzung für summierte quadraturformeln)
+
+@author: Martin Oswald
+@license: MIT
+@version: 1.0
+"""
 from typing import Callable
 import numpy as np
 import sympy as sp
@@ -136,7 +150,7 @@ def err_est(f: sp.Expr, a: float, b: float, tol: float, type: str) -> float:
         type (str): 'R': Rechteck, 'T': Trapez, 'S': Simpson
 
     Returns:
-        float: Max Schrittbreite
+        float: Max step width. choose h smaller or equal to this. 
     """
     assert type in ['R', 'T', 'S'], "Type needs to be 'R', 'T' or 'S'"
     a, b = float(a), float(b)
@@ -167,10 +181,10 @@ if __name__ == '__main__':
     n = 4
     print(romb(f, a, b, n))
 
-    print('example err_est')
+    print('\nexample err_est')
     x = sp.symbols('x')
     f = sp.ln(x ** 2)
     a = 1
     b = 2
     tol = 10 ** -5
-    print(err_est(f, a, b, tol, 'T'))
+    print(err_est(f, a, b, tol, 'S'))
