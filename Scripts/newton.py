@@ -18,7 +18,7 @@ def newton(f: sp.Expr, sy: sp.Expr, x0: np.ndarray, tol: float, max_iter: int, p
 
     Args:
         f (Sympy Expr.): Sympy Expression (e.g Matrix)
-        sy (Sympy Expr.): Symbols used in f (e.g Matrix)
+        sy (Sympy Expr.): Symbols used in f (e.g Matrix) ->[x1, x2]
         x0 (ndarray): initial vector/guess
         tol (float): error tolerance from root of f
         max_iter (int): max number of iterations

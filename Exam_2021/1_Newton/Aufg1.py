@@ -12,4 +12,14 @@ x0 = np.array([1, 1], dtype=np.float64)
 tol = 1e-5
 max_iter = 2
 
-print(newton.newton(f, x0, tol, max_iter, damping=False))
+print(newton.newton(f, [x, y], x0, tol, max_iter, damping=False))
+
+# it:	 1
+# x1 =	 [1.75 3.5 ]
+# d1 =	 [0.75 2.5 ]
+#
+# it:	 2
+# x2 =	 [1.38068976 2.74339944]
+# d2 =	 [-0.36931024 -0.75660056]
+#
+# [1.38068976 2.74339944]
